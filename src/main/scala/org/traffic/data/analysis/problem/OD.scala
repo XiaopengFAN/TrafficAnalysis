@@ -3,7 +3,7 @@ package org.traffic.data.analysis.problem
 import java.text.SimpleDateFormat
 import org.apache.spark.rdd.RDD
 //计算下车地点
-class OffLocation(gps:RDD[String],trans:RDD[String]) extends Serializable{
+class OD(gps:RDD[String],trans:RDD[String]) extends Serializable{
   //将时间转化为和“2014-01-01 00：00：00的时间差，以秒为单位”
   private def StringToLong(time:String):Long = {
     //val timetoN = time.split("T")(0)+" "+time.split("T")(1).substring(0,8)
@@ -57,10 +57,13 @@ class OffLocation(gps:RDD[String],trans:RDD[String]) extends Serializable{
         val gpsTime = gps.map(_.split(",")(3)).map(StringToLong(_))
         trans.map(record => {
           //DZ111,2014-10-01,2014-10-01T02:14:31.000Z,2014-10-01T02:20:01.000Z,288,1213,00\u5c0f\u65f602\u520620\u79d2,780,12917
-          val index = findearest(gpsTime,StringToLong(record.split(",")(1)))
-          val ss = gps(index).split(",")
+          val indexUp = findearest(gpsTime,StringToLong(record.split(",")(1)))
+          val indexDown = findearest(gpsTime,StringToLong(record.split(",")(2)))
+          val uu = gps(indexUp).split(",")
+          val ss = gps(indexDown).split(",")
           val tr = record.split(",")
-          tr(0)+","+tr(1)+","+ss(1)+","+ss(2)+","+tr(4)+","+tr(6)//拼接的结果为：车牌号，下车时间，经度，维度，交易里程，交易金额
+          val time = StringToLong(tr(2))-StringToLong(tr(1))
+          tr(0)+";"+tr(1)+","+uu(1)+","+uu(2)+";"+tr(2)+","+ss(1)+","+ss(2)+";"+tr(4).toDouble/1000+","+tr(6).toDouble/100+","+time//拼接的结果为：车牌号，下车时间，经度，维度，交易里程，交易金额
         })
       }
     }
