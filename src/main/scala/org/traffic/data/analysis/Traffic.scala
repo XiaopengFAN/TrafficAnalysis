@@ -10,7 +10,7 @@ object Traffic {
     val trans = sc.textFile(args(1)) //"/data/traffic/taxi/original_data/trans/TRANS_2014_05_26"
     //val area = sc.textFile("/data/traffic/taxi/original_data/merge/area_merge")
     val time = args(2)//"2014-05-26"
-    val url = args(3) // "/workspace/odcompute/0526"
+    val url = args(3) // "/workspace/odcompute/0526"  ddd
     //预处理
     val data_gps = new PretreatData(gps, trans, time).gps_run
     val data_trans = new PretreatData(gps, trans, time).trans_run //509646
